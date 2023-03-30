@@ -5,7 +5,7 @@
       "name": "Shoyu Ramen",
       "restaurant": "Nonono",
       "image": "./assets/ramen/shoyu.jpg",
-      "rating": 7,
+      "rating": "7",
       "comment": "Delish. Can't go wrong with a classic!"
     },
     {
@@ -39,6 +39,22 @@
       "image": "./assets/ramen/kojiro.jpg",
       "rating": 6,
       "comment": "Perfect for a cold night."
+    },
+    {
+      "id": 6,
+      "name": "Tonkotsu Ramen",
+      "restaurant": "Haru Japanese",
+      "image": "https://i1.wp.com/seonkyounglongest.com/wp-content/uploads/2020/09/Easy-Tonkotsu-26-mini.jpg?fit=1000%2C667&ssl=1",
+      "rating": "5",
+      "comment": "Looks like it just hatched."
+    },
+    {
+      "id": 7,
+      "name": "Sapporo Ramen",
+      "restaurant": "Aji no Sanpei",
+      "image": "https://media-cdn.tripadvisor.com/media/photo-s/1a/a7/2b/e5/caption.jpg",
+      "rating": "8",
+      "comment": "The noodles are slightly thicker and the toppings are usually stir-fried vegetables, ground pork, and corn."
     }
   ]
 }
