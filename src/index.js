@@ -38,7 +38,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 
-
   //Function to add event listeners to the images contained in the ramen menu.
   function addMenuListeners(ramenImage, ramensArray) {
     ramenImage.addEventListener("click", (event) => clickLogic(ramenImage.src, ramensArray));
@@ -50,44 +49,6 @@ document.addEventListener("DOMContentLoaded", () => {
           break;
         }
       }
-    }
-  }
-
-
-  //Function to update the ramen details based on the edit form. Rejects input that is not an integer between 0 and 10.
-  function updateRamenDetails(ramensArray, newDetails){
-    try{
-      let newRating = newDetails.rating;
-      const newComment = newDetails.comment;
-      newRatingNumber = parseInt(newRating, 10);
-
-      const isInvalidRating = isNaN(newRating) || newRating === "" || newRatingNumber < 0 || newRatingNumber > 10;
-
-      if (isInvalidRating) throw ("Rating must be an integer between 0 and 10");
-
-      const name = document.querySelector(".name");
-      const rating = document.querySelector("#rating-display");
-      const comment = document.querySelector("#comment-display");
-      
-      let index = 0
-      for ( ; index < ramensArray.length; ++index) {
-        if (ramensArray[index].name === name.textContent) {
-          rating.textContent = newRating;
-          ramensArray[index].rating = newRating;
-          comment.textContent = newComment;
-          ramensArray[index].comment = newComment;
-          break;
-        }
-      }
-
-      const url = baseUrl + mainRoute + `/${index + 1}`;
-      fetch(url, {method: "PATCH", headers: {"Content-Type": "application/json"}, body: JSON.stringify({"rating": ramensArray[index].rating, "comment": ramensArray[index].comment})})
-      .then(response => response.json())
-      .then(data => console.log(data));
-      debugger
-
-    } catch(error){
-        alert(error);
     }
   }
 
@@ -134,7 +95,47 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 
-  //The solution begins here.
+  //Function to update the ramen details based on the edit form. Rejects input that is not an integer between 0 and 10.
+  function updateRamenDetails(ramensArray, newDetails){
+    try{
+      let newRating = newDetails.rating;
+      const newComment = newDetails.comment;
+      newRatingNumber = parseInt(newRating, 10);
+
+      const isInvalidRating = isNaN(newRating) || newRating === "" || newRatingNumber < 0 || newRatingNumber > 10;
+
+      if (isInvalidRating) throw ("Rating must be an integer between 0 and 10");
+
+      const name = document.querySelector(".name");
+      const rating = document.querySelector("#rating-display");
+      const comment = document.querySelector("#comment-display");
+      
+      let index = 0
+      for ( ; index < ramensArray.length; ++index) {
+        if (ramensArray[index].name === name.textContent) {
+          //Update rating in the DOM and the cache.
+          rating.textContent = newRating;
+          ramensArray[index].rating = newRating;
+
+          //Update comment in the DOM and the cache.
+          comment.textContent = newComment;
+          ramensArray[index].comment = newComment;
+          break;
+        }
+      }
+
+      const url = baseUrl + mainRoute + `/${index + 1}`;
+      fetch(url, {method: "PATCH", headers: {"Content-Type": "application/json"}, body: JSON.stringify({"rating": ramensArray[index].rating, "comment": ramensArray[index].comment})})
+      .then(response => response.json())
+      .then(data => console.log(data));
+
+    } catch(error){
+        alert(error);
+    }
+  }
+
+
+  //Solution begins here.
   const url = baseUrl + mainRoute;
 
   fetch(url).then((result) => result.json()).then((data) => {
@@ -171,8 +172,8 @@ document.addEventListener("DOMContentLoaded", () => {
     updateRamenForm.addEventListener("submit", (event) => { 
       event.preventDefault(); 
       
-      updateRamenDetails(ramensArray, {rating: event.target.childNodes[5].value, comment: event.target.childNodes[9].value}); 
-      
+      updateRamenDetails(ramensArray, {rating: event.target.querySelector("#new-rating").value, comment: event.target.querySelector("#new-comment").value});
+
       const newRating = document.querySelector("#edit-ramen > #new-rating");
       newRating.value = "";
 
