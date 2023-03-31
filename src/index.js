@@ -10,7 +10,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const ramenImage = document.createElement("img");
     ramenImage.src = ramen.image;
     ramenImage.alt = ramen.name;
-
+    let name = ramen.name.split(" ").join("");
+    ramenImage.id = name;
 
     //Add the character to the DOM
     const ramenMenu = document.querySelector("#ramen-menu");
@@ -55,7 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   //Function that defines a template for a new ramen and POSTS it to the database.
   function createNewRamen(ramensArray){
-    const newId = ramensArray.length + 1;
+    const newId = (ramensArray[ramensArray.length - 1].id + 1);
     const newName = document.querySelector("#new-name");
     const newRestaurant = document.querySelector("#new-restaurant");
     const newImage = document.querySelector("#new-image");
@@ -106,39 +107,76 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (isInvalidRating) throw ("Rating must be an integer between 0 and 10");
 
-      const name = document.querySelector(".name");
-      const rating = document.querySelector("#rating-display");
-      const comment = document.querySelector("#comment-display");
-      
-      let index = 0
-      for ( ; index < ramensArray.length; ++index) {
-        if (ramensArray[index].name === name.textContent) {
-          //Update rating in the DOM and the cache.
-          rating.textContent = newRating;
-          ramensArray[index].rating = newRating;
+      try {
+        if (newComment === "") throw ("Provide an updated comment");
 
-          //Update comment in the DOM and the cache.
-          comment.textContent = newComment;
-          ramensArray[index].comment = newComment;
-          break;
+
+        const name = document.querySelector(".name");
+        const rating = document.querySelector("#rating-display");
+        const comment = document.querySelector("#comment-display");
+      
+        let index = 0;
+        for ( ; index < ramensArray.length; ++index) {
+          if (ramensArray[index].name === name.textContent) {
+            //Update rating in the DOM and the cache.
+            rating.textContent = newRating;
+            ramensArray[index].rating = newRating;
+
+            //Update comment in the DOM and the cache.
+          
+            comment.textContent = newComment;
+            ramensArray[index].comment = newComment;
+            break;
+          }
         }
+
+        const url = baseUrl + mainRoute + `/${ramensArray[index].id}`;
+        fetch(url, {method: "PATCH", headers: {"Content-Type": "application/json"}, body: JSON.stringify({"rating": ramensArray[index].rating, "comment": ramensArray[index].comment})})
+        .then(response => response.json())
+        .then(data => console.log(data));
+
+      } catch(ratingError){
+          alert(ratingError);
       }
 
-      const url = baseUrl + mainRoute + `/${index + 1}`;
-      fetch(url, {method: "PATCH", headers: {"Content-Type": "application/json"}, body: JSON.stringify({"rating": ramensArray[index].rating, "comment": ramensArray[index].comment})})
-      .then(response => response.json())
-      .then(data => console.log(data));
-
-    } catch(error){
-        alert(error);
+    } catch(commentError){
+       alert(commentError);
     }
   }
 
 
+  function deleteRamen(ramensArray){
+    const currentRamen = document.querySelector(".name");
+    let deleteId = "";
+    let index = 0;
+    for (; index < ramensArray.length; ++index) {
+      if (ramensArray[index].name === currentRamen.textContent) {
+        const ramenMenu = document.querySelector("#ramen-menu");
+        const idToGrabRamenInMenu = (ramensArray[index].name.split(" ")).join("");
+        const ramenImageInMenu = document.querySelector(`#${idToGrabRamenInMenu}`);
+        ramenMenu.removeChild(ramenImageInMenu);
+
+        // Delete the record currently being rendered from the cache.
+        deleteId = ramensArray[index].id;
+        ramensArray.splice(index, 1);
+
+        // Render the previous ramen record. Note that if the deleted record is the first one, the previous page will be the last page in the cache.
+        let previousIndex = (index === 0) ? 0 : index - 1;
+        renderRamenBody(ramensArray[previousIndex]);
+        break;
+      }
+    }
+    
+    //Delete the record in the database.
+    const url = baseUrl + mainRoute + `/${deleteId}`;
+    fetch(url, {method: "DELETE"}).then(response => response.json()).then(data => console.log(data));
+  }
+  
+
   //Solution begins here.
   const url = baseUrl + mainRoute;
 
-  fetch(url).then((result) => result.json()).then((data) => {
+  fetch(url, {method: "GET"}).then((result) => result.json()).then((data) => {
 
     //Cache the fetched data.
     const ramensArray = Array.from(data);
@@ -181,6 +219,12 @@ document.addEventListener("DOMContentLoaded", () => {
       newComment.value = "";
     });
 
+    //Delete a Ramen entry on pressing delete
+    const deleteButton = document.querySelector("#delete-button");
+    deleteButton.addEventListener("click", (event) => {
+      deleteRamen(ramensArray);
+    })
+    
   })
     
 })

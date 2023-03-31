@@ -13,7 +13,7 @@
       "name": "Naruto Ramen",
       "restaurant": "Naruto",
       "image": "./assets/ramen/naruto.jpg",
-      "rating": 10,
+      "rating": "10",
       "comment": "My absolute fave!"
     },
     {
@@ -54,7 +54,7 @@
       "restaurant": "Aji no Sanpei",
       "image": "https://media-cdn.tripadvisor.com/media/photo-s/1a/a7/2b/e5/caption.jpg",
       "rating": "8",
-      "comment": "The noodles are slightly thicker "
+      "comment": "Savory soup"
     }
   ]
 }
